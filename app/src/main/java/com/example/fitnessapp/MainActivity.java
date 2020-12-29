@@ -34,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String FILE_NAME = "example.txt";
 
+    public int replacePos = -1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
         System.out.println(savedInstanceState == null);
         //instantiate custom adapter
         ArrayList<Entry> entries = load();
-        entryList = new EntryAdapter(entries);
+        entryList = new EntryAdapter(entries, this, replacePos);
 
         list.setAdapter(entryList);
 
@@ -62,12 +64,16 @@ public class MainActivity extends AppCompatActivity {
 
         if(i.getParcelableExtra("entry") != null) {
             Entry entry = (Entry) i.getParcelableExtra("entry");
-            entryList.add(entry);
+            if(entryList.replacePos != -1) {
+                entryList.add(entryList.replacePos, entry);
+                entryList.replacePos = -1;
+            } else {
+                entryList.add(entry);
+            }
             entryList.notifyDataSetChanged();
             save();
         }
     }
-
 
     public void newEntry(View view) {
         Intent intent = new Intent(this, EntryForm.class);
@@ -91,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
             FileOutputStream fos = new FileOutputStream(file);
             ObjectOutputStream oos = new ObjectOutputStream(fos);
             oos.writeObject(entryList.getList());
+            oos.writeObject(entryList.replacePos);
             oos.close();
             fos.close();
         } catch(Exception ex) {
@@ -104,6 +111,7 @@ public class MainActivity extends AppCompatActivity {
             FileInputStream fos = new FileInputStream(getFilesDir() + "/output.txt");
             ObjectInputStream oos = new ObjectInputStream(fos);
             loadList = (ArrayList<Entry>) oos.readObject();
+            replacePos = (int) oos.readObject();
             oos.close();
             fos.close();
         } catch(Exception ex) {
