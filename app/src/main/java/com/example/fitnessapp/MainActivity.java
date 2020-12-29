@@ -30,7 +30,7 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-    private EntryAdapter entryList;
+    private WorkoutAdapter entryList;
 
     private static final String FILE_NAME = "example.txt";
 
@@ -51,19 +51,16 @@ public class MainActivity extends AppCompatActivity {
         });
 
         ListView list = (ListView) findViewById(R.id.listArea);
-        Log.d("myTag", "This is my message");
-        System.out.println(savedInstanceState == null);
         //instantiate custom adapter
-        ArrayList<Entry> entries = load();
-        entryList = new EntryAdapter(entries, this, replacePos);
+        ArrayList<ArrayList<Entry>> entries = load();
+        entryList = new WorkoutAdapter(entries, this, replacePos);
 
         list.setAdapter(entryList);
 
         Intent i = getIntent();
 
-
-        if(i.getParcelableExtra("entry") != null) {
-            Entry entry = (Entry) i.getParcelableExtra("entry");
+        if(i.getParcelableArrayListExtra("finalEntry") != null) {
+            ArrayList<Entry> entry = i.getParcelableArrayListExtra("finalEntry");
             if(entryList.replacePos != -1) {
                 entryList.add(entryList.replacePos, entry);
                 entryList.replacePos = -1;
@@ -76,21 +73,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void newEntry(View view) {
-        Intent intent = new Intent(this, EntryForm.class);
+        Intent intent = new Intent(this, WorkoutList.class);
         save();
         startActivity(intent);
     }
 
-    /*
-    @Override
-    public void onRestoreInstanceState(Bundle savedInstance){
-        onCreate(savedInstance);
-    }*/
-
     public void save() {
         try
         {
-            File file = new File(getFilesDir() + "/output.txt");
+            File file = new File(getFilesDir() + "/main.txt");
             if (!file.exists()) {
                 file.createNewFile();
             }
@@ -105,12 +96,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public ArrayList<Entry> load() {
-        ArrayList<Entry> loadList = new ArrayList<Entry>();
+    public ArrayList<ArrayList<Entry>> load() {
+        ArrayList<ArrayList<Entry>> loadList = new ArrayList<ArrayList<Entry>>();
         try {
-            FileInputStream fos = new FileInputStream(getFilesDir() + "/output.txt");
+            FileInputStream fos = new FileInputStream(getFilesDir() + "/main.txt");
             ObjectInputStream oos = new ObjectInputStream(fos);
-            loadList = (ArrayList<Entry>) oos.readObject();
+            loadList = (ArrayList<ArrayList<Entry>>) oos.readObject();
             replacePos = (int) oos.readObject();
             oos.close();
             fos.close();

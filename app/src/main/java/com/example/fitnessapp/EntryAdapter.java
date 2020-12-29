@@ -2,6 +2,7 @@ package com.example.fitnessapp;
 
 import android.content.Intent;
 import android.os.Build;
+import android.os.Parcelable;
 import android.text.SpannableString;
 import android.text.style.UnderlineSpan;
 import android.view.Gravity;
@@ -24,7 +25,7 @@ import java.util.ArrayList;
 
 public class EntryAdapter extends BaseAdapter implements ListAdapter {
     ArrayList<Entry> entry;
-    static MainActivity main;
+    static WorkoutList main;
     int replacePos;
 
     public EntryAdapter() {
@@ -33,7 +34,7 @@ public class EntryAdapter extends BaseAdapter implements ListAdapter {
         replacePos = -1;
     }
 
-    public EntryAdapter(ArrayList<Entry> entry, MainActivity main, int replacePos) {
+    public EntryAdapter(ArrayList<Entry> entry, WorkoutList main, int replacePos) {
         this.entry = entry;
         this.main = main;
         this.replacePos = replacePos;
@@ -57,7 +58,6 @@ public class EntryAdapter extends BaseAdapter implements ListAdapter {
     public long getItemId(int position) {
         return position;
     }
-
     void add(Entry element) {
         entry.add(0, element);
     }
@@ -66,6 +66,11 @@ public class EntryAdapter extends BaseAdapter implements ListAdapter {
         entry.add(pos, element);
     }
 
+    public void setDate(String date) {
+        for(int i = 0; i < entry.size(); i++) {
+            entry.get(i).date = date;
+        }
+    }
     public void save() {
         try
         {
@@ -85,10 +90,14 @@ public class EntryAdapter extends BaseAdapter implements ListAdapter {
     }
 
     public void edit(int position) {
-        entry.remove(position);
+
         replacePos = position;
-        save();
         Intent intent = new Intent(main, EntryForm.class);
+        intent.putExtra("editEntry", (Parcelable) entry.get(position));
+        entry.remove(position);
+        save();
+        intent.putExtra("editPos", position);
+        intent.putParcelableArrayListExtra("editList", entry);
         main.startActivity(intent);
     }
 
@@ -103,6 +112,7 @@ public class EntryAdapter extends BaseAdapter implements ListAdapter {
         LinearLayout.LayoutParams lparams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
 
+        /*
         TextView dateText = new TextView(parent.getContext());
         dateText.setLayoutParams(lparams);
         dateText.setTextSize(28);
@@ -111,7 +121,7 @@ public class EntryAdapter extends BaseAdapter implements ListAdapter {
         dateText.setText(content);
 
         layout.addView(dateText);
-
+         */
         TextView exerciseText = new TextView(parent.getContext());
         exerciseText.setLayoutParams(lparams);
         exerciseText.setText(entry.get(position).exercise + " (" + entry.get(position).type + ")");

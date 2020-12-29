@@ -13,10 +13,10 @@ public class Entry implements Parcelable, Serializable {
     public String reps;
     public String weight;
 
-    public Entry(String exercise, String type, String date, String sets, String reps, String weight) {
+    public Entry(String exercise, String type, String sets, String reps, String weight) {
         this.exercise = exercise;
         this.type = type;
-        this.date = date;
+        this.date = "";
         this.sets = sets;
         this.reps = reps;
         this.weight = weight;
