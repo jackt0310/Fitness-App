@@ -1,10 +1,6 @@
-package com.example.fitnessapp;
+package com.buffboosterapp.buffbooster;
 
 import android.content.Intent;
-import android.os.Build;
-import android.text.SpannableString;
-import android.text.style.UnderlineSpan;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -14,7 +10,6 @@ import android.widget.ListAdapter;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import androidx.annotation.RequiresApi;
 import androidx.cardview.widget.CardView;
 
 import java.io.File;

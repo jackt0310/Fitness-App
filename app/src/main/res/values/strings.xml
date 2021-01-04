@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Fitness App</string>
     <string name="CreateEntry">CREATE NEW ENTRY</string>
+    <string name="AddWorkout">ADD NEW WORKOUT</string>
 </resources>

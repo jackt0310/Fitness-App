@@ -1,10 +1,7 @@
-package com.example.fitnessapp;
+package com.buffboosterapp.buffbooster;
 
 import android.content.Intent;
-import android.os.Build;
 import android.os.Parcelable;
-import android.text.SpannableString;
-import android.text.style.UnderlineSpan;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +12,6 @@ import android.widget.ListAdapter;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import androidx.annotation.RequiresApi;
 import androidx.cardview.widget.CardView;
 
 import java.io.File;
@@ -103,35 +99,24 @@ public class EntryAdapter extends BaseAdapter implements ListAdapter {
 
     public View getView(int position, View convertView, ViewGroup parent) {
         RelativeLayout horizon = new RelativeLayout(parent.getContext());
-        //horizon.setOrientation(LinearLayout.HORIZONTAL);
         horizon.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT));
 
         LinearLayout layout = new LinearLayout(parent.getContext());
         layout.setOrientation(LinearLayout.VERTICAL);
         layout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
         LinearLayout.LayoutParams lparams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        lparams.gravity = Gravity.CENTER_VERTICAL;
 
-
-        /*
-        TextView dateText = new TextView(parent.getContext());
-        dateText.setLayoutParams(lparams);
-        dateText.setTextSize(28);
-        SpannableString content = new SpannableString(entry.get(position).date);
-        content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
-        dateText.setText(content);
-
-        layout.addView(dateText);
-         */
         TextView exerciseText = new TextView(parent.getContext());
         exerciseText.setLayoutParams(lparams);
         exerciseText.setText(entry.get(position).exercise + " (" + entry.get(position).type + ")");
-        exerciseText.setTextSize(24);
+        exerciseText.setTextSize(19);
         layout.addView(exerciseText);
 
         TextView detailsText = new TextView(parent.getContext());
         detailsText.setLayoutParams(lparams);
         detailsText.setText(entry.get(position).sets + "x" + entry.get(position).reps + " @ " + entry.get(position).weight + "lb");
-        detailsText.setTextSize(24);
+        detailsText.setTextSize(19);
         layout.addView(detailsText);
 
 

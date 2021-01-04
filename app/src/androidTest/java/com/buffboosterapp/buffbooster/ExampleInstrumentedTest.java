@@ -1,4 +1,4 @@
-package com.example.fitnessapp;
+package com.buffboosterapp.buffbooster;
 
 import android.content.Context;
 

@@ -1,31 +1,21 @@
-package com.example.fitnessapp;
+package com.buffboosterapp.buffbooster;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
-import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Parcelable;
-import android.text.SpannableString;
-import android.text.style.UnderlineSpan;
-import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.time.LocalDateTime;
@@ -60,14 +50,9 @@ public class WorkoutList extends AppCompatActivity {
 
         Intent i = getIntent();
         ArrayList<Entry> entries = new ArrayList<Entry>();
-        System.out.println(getIntent().getIntExtra("editPos", -1));
+
         replacePos = i.getIntExtra("editPos", -1);
         entryList = new EntryAdapter(entries, this, replacePos);
-
-
-
-        Log.d("myTag", "This is my parcel message");
-        System.out.println(i.getParcelableArrayListExtra("editList") != null);
 
         if(i.getParcelableArrayListExtra("editList") != null) {
             entries = i.getParcelableArrayListExtra("editList");
@@ -78,8 +63,6 @@ public class WorkoutList extends AppCompatActivity {
 
 
         list.setAdapter(entryList);
-        Log.d("myTag", "Parcel extra found");
-        System.out.println(i.getParcelableExtra("entry") != null);
 
         if(i.getParcelableExtra("entry") != null) {
             Entry entry = (Entry) i.getParcelableExtra("entry");
@@ -156,10 +139,24 @@ public class WorkoutList extends AppCompatActivity {
     }
 
     public void submit(View v) {
+        if(!inputIsValid()) {
+            Context context = getApplicationContext();
+            CharSequence text = "Must have at least one exercise per workout.";
+            int duration = Toast.LENGTH_SHORT;
+
+            Toast toast = Toast.makeText(context, text, duration);
+            toast.show();
+
+            return;
+        }
         Intent intent = new Intent(this, MainActivity.class);
         TextView date = (TextView) findViewById(R.id.textView3);
         entryList.setDate(date.getText().toString());
         intent.putParcelableArrayListExtra("finalEntry", entryList.getList());
         startActivity(intent);
+    }
+
+    public boolean inputIsValid() {
+        return entryList.getCount() > 0;
     }
 }
