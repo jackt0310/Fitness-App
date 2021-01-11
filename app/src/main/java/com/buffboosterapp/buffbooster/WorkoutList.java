@@ -1,8 +1,5 @@
 package com.buffboosterapp.buffbooster;
 
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -12,6 +9,9 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -83,6 +83,18 @@ public class WorkoutList extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 submit(v);
+            }
+        });
+
+        // back button
+        Button backBtn = (Button) findViewById(R.id.button4);
+
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(WorkoutList.this, MainActivity.class);
+                save();
+                startActivity(intent);
             }
         });
 

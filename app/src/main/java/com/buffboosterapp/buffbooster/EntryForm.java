@@ -1,7 +1,5 @@
 package com.buffboosterapp.buffbooster;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,6 +8,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class EntryForm extends AppCompatActivity {
 
@@ -37,6 +37,16 @@ public class EntryForm extends AppCompatActivity {
                 submit(v);
             }
         });
+
+        //back button
+
+        Button backBtn = (Button) findViewById(R.id.button5);
+
+        backBtn.setOnClickListener(new View.OnClickListener() {
+          @Override
+          public void onClick(View v) { finish(); }
+        });
+
     }
 
     public void submit(View view) {

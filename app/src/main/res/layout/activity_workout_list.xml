@@ -73,4 +73,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/mainText" />
 
+    <Button
+        android:id="@+id/button4"
+        android:layout_width="64dp"
+        android:layout_height="54dp"
+        app:backgroundTint="@color/purple_500"
+        app:icon="@android:drawable/ic_menu_revert"
+        app:layout_constraintBottom_toBottomOf="@+id/mainText"
+        app:layout_constraintEnd_toStartOf="@+id/mainText"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.421" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
