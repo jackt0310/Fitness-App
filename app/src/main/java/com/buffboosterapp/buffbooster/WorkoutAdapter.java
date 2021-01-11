@@ -61,6 +61,10 @@ public class WorkoutAdapter extends BaseAdapter implements ListAdapter {
         entry.add(pos, element);
     }
 
+    void replace(int pos, ArrayList<Entry> element) {
+        entry.set(pos, element);
+    }
+
     public void save() {
         try
         {
@@ -83,7 +87,7 @@ public class WorkoutAdapter extends BaseAdapter implements ListAdapter {
         replacePos = position;
         Intent intent = new Intent(main, WorkoutList.class);
         intent.putParcelableArrayListExtra("editList", entry.get(position));
-        entry.remove(position);
+        //entry.remove(position);
         save();
         main.startActivity(intent);
     }

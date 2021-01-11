@@ -1,12 +1,12 @@
 package com.buffboosterapp.buffbooster;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
         if(i.getParcelableArrayListExtra("finalEntry") != null) {
             ArrayList<Entry> entry = i.getParcelableArrayListExtra("finalEntry");
             if(entryList.replacePos != -1) {
-                entryList.add(entryList.replacePos, entry);
+                entryList.replace(entryList.replacePos, entry);
                 entryList.replacePos = -1;
             } else {
                 entryList.add(entry);

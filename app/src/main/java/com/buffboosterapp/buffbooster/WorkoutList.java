@@ -93,6 +93,7 @@ public class WorkoutList extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(WorkoutList.this, MainActivity.class);
+                entryList.replacePos = -1;
                 save();
                 startActivity(intent);
             }

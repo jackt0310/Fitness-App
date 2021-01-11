@@ -34,7 +34,17 @@ public class EntryForm extends AppCompatActivity {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                submit(v);
+                if(!inputIsValid()) {
+                    Context context = getApplicationContext();
+                    CharSequence text = "Must enter information for all fields.";
+                    int duration = Toast.LENGTH_SHORT;
+
+                    Toast toast = Toast.makeText(context, text, duration);
+                    toast.show();
+                }
+                else {
+                    submit(v);
+                }
             }
         });
 
@@ -44,22 +54,13 @@ public class EntryForm extends AppCompatActivity {
 
         backBtn.setOnClickListener(new View.OnClickListener() {
           @Override
-          public void onClick(View v) { finish(); }
+          public void onClick(View v) { submit(v); }
         });
 
     }
 
     public void submit(View view) {
-        if(!inputIsValid()) {
-            Context context = getApplicationContext();
-            CharSequence text = "Must enter information for all fields.";
-            int duration = Toast.LENGTH_SHORT;
 
-            Toast toast = Toast.makeText(context, text, duration);
-            toast.show();
-
-            return;
-        }
         String editExercise = ((TextView) findViewById(R.id.editExercise)).getText().toString();
         String editType = ((TextView) findViewById(R.id.editType)).getText().toString();
         String editSets = ((TextView) findViewById(R.id.editSets)).getText().toString();
