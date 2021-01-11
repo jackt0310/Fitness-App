@@ -20,53 +20,54 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 public class EntryAdapter extends BaseAdapter implements ListAdapter {
-    ArrayList<Entry> entry;
-    static WorkoutList main;
+    Workout workout;
+    static EntryForm main;
     int replacePos;
 
     public EntryAdapter() {
-        entry = new ArrayList<Entry>();
+        workout = new Workout();
         main = null;
         replacePos = -1;
     }
 
-    public EntryAdapter(ArrayList<Entry> entry, WorkoutList main, int replacePos) {
-        this.entry = entry;
+    public EntryAdapter(Workout workout, EntryForm main, int replacePos) {
+        this.workout = workout;
         this.main = main;
         this.replacePos = replacePos;
     }
 
-    public ArrayList<Entry> getList() {
-        return entry;
+    public Workout getWorkout() {
+        return workout;
     }
 
     @Override
     public int getCount() {
-        return entry.size();
+        return workout.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return entry.get(position);
+        return workout.get(position);
     }
 
     @Override
     public long getItemId(int position) {
         return position;
     }
+
     void add(Entry element) {
-        entry.add(0, element);
+        workout.add(0, element);
     }
 
     void add(int pos, Entry element) {
-        entry.add(pos, element);
+        workout.add(pos, element);
     }
 
     public void setDate(String date) {
-        for(int i = 0; i < entry.size(); i++) {
-            entry.get(i).date = date;
-        }
+        workout.date = date;
     }
+
+    /*
     public void save() {
         try
         {
@@ -95,29 +96,35 @@ public class EntryAdapter extends BaseAdapter implements ListAdapter {
         intent.putExtra("editPos", position);
         intent.putParcelableArrayListExtra("editList", entry);
         main.startActivity(intent);
-    }
+    }*/
 
     public View getView(int position, View convertView, ViewGroup parent) {
+        /* Horizontal layout containing everything within card */
         RelativeLayout horizon = new RelativeLayout(parent.getContext());
         horizon.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT));
 
+        /* Vertical layout containing the information within card */
         LinearLayout layout = new LinearLayout(parent.getContext());
         layout.setOrientation(LinearLayout.VERTICAL);
         layout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
         LinearLayout.LayoutParams lparams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         lparams.gravity = Gravity.CENTER_VERTICAL;
 
+
         TextView exerciseText = new TextView(parent.getContext());
         exerciseText.setLayoutParams(lparams);
-        exerciseText.setText(entry.get(position).exercise + " (" + entry.get(position).type + ")");
+        exerciseText.setText(workout.get(position).exerciseName);
         exerciseText.setTextSize(19);
         layout.addView(exerciseText);
 
+        /*
         TextView detailsText = new TextView(parent.getContext());
         detailsText.setLayoutParams(lparams);
         detailsText.setText(entry.get(position).sets + "x" + entry.get(position).reps + " @ " + entry.get(position).weight + "lb");
         detailsText.setTextSize(19);
         layout.addView(detailsText);
+        */
+
 
 
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
@@ -137,7 +144,7 @@ public class EntryAdapter extends BaseAdapter implements ListAdapter {
         editButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                edit(position);
+                //edit(position);
             }
         });
         buttons.addView(editButton);
@@ -150,9 +157,9 @@ public class EntryAdapter extends BaseAdapter implements ListAdapter {
         deleteButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                entry.remove(position);
+                workout.remove(position);
                 notifyDataSetChanged();
-                save();
+                //save();
             }
         });
 

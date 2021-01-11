@@ -4,22 +4,31 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class Entry implements Parcelable, Serializable {
-    public String exercise;
+    /* Type of exercise - ex: Custom */
     public String type;
-    public String date;
-    public String sets;
-    public String reps;
-    public String weight;
 
-    public Entry(String exercise, String type, String sets, String reps, String weight) {
-        this.exercise = exercise;
-        this.type = type;
-        this.date = "";
-        this.sets = sets;
-        this.reps = reps;
-        this.weight = weight;
+    /* Name of exercise - ex: Dumbbell Curls */
+    public String exerciseName;
+
+    /* Number of sets */
+    public int numSets;
+
+    /* If true, uses reps; otherwise, uses time */
+    public boolean usesReps;
+
+    /* List of each set - using reps as a measurement */
+    public ArrayList<RepElement> setReps;
+
+    /* List of each set - using time as a measurement */
+    public ArrayList<TimeElement> setTimes;
+
+    /* Notes about current exercise */
+    public String notes;
+
+    public Entry() {
     }
 
 
@@ -34,12 +43,6 @@ public class Entry implements Parcelable, Serializable {
     // write your object's data to the passed-in Parcel
     @Override
     public void writeToParcel(Parcel out, int flags) {
-        out.writeString(exercise);
-        out.writeString(type);
-        out.writeString(date);
-        out.writeString(sets);
-        out.writeString(reps);
-        out.writeString(weight);
     }
 
     // this is used to regenerate your object. All Parcelables must have a CREATOR that implements these two methods
@@ -56,12 +59,6 @@ public class Entry implements Parcelable, Serializable {
 
     // example constructor that takes a Parcel and gives you an object populated with it's values
     private Entry(Parcel in) {
-        exercise = in.readString();
-        type = in.readString();
-        date = in.readString();
-        sets = in.readString();
-        reps = in.readString();
-        weight = in.readString();
     }
 
 }

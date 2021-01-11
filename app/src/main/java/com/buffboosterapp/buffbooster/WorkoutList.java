@@ -23,13 +23,12 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class WorkoutList extends AppCompatActivity {
-    private EntryAdapter entryList;
+    private WorkoutAdapter entryList;
 
-    private static final String FILE_NAME = "example.txt";
+    private static final String FILE_NAME = "workoutList.txt";
 
     public int replacePos = -1;
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,30 +44,19 @@ public class WorkoutList extends AppCompatActivity {
         });
 
         ListView list = (ListView) findViewById(R.id.listArea);
-
         //instantiate custom adapter
-
-        Intent i = getIntent();
-        ArrayList<Entry> entries = new ArrayList<Entry>();
-
-        replacePos = i.getIntExtra("editPos", -1);
-        entryList = new EntryAdapter(entries, this, replacePos);
-
-        if(i.getParcelableArrayListExtra("editList") != null) {
-            entries = i.getParcelableArrayListExtra("editList");
-            entryList = new EntryAdapter(entries, this, replacePos);
-            i.removeExtra("editList");
-            save();
-        }
-
+        ArrayList<Workout> entries = load();
+        entryList = new WorkoutAdapter(entries, this, replacePos);
 
         list.setAdapter(entryList);
 
-        if(i.getParcelableExtra("entry") != null) {
-            Entry entry = (Entry) i.getParcelableExtra("entry");
+        Intent i = getIntent();
+
+        // Takes information from last page (if applicable)
+        if(i.getParcelableExtra("finalEntry") != null) {
+            Workout entry = i.getParcelableExtra("finalEntry");
             if(entryList.replacePos != -1) {
-                System.out.println("replacePos");
-                entryList.add(entryList.replacePos, entry);
+                entryList.replace(entryList.replacePos, entry);
                 entryList.replacePos = -1;
             } else {
                 entryList.add(entry);
@@ -76,52 +64,18 @@ public class WorkoutList extends AppCompatActivity {
             entryList.notifyDataSetChanged();
             save();
         }
-
-        Button subBtn = (Button) findViewById(R.id.button3);
-
-        subBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                submit(v);
-            }
-        });
-
-        // back button
-        Button backBtn = (Button) findViewById(R.id.button4);
-
-        backBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(WorkoutList.this, MainActivity.class);
-                entryList.replacePos = -1;
-                save();
-                startActivity(intent);
-            }
-        });
-
-        TextView date = (TextView) findViewById(R.id.textView3);
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MM/dd/yyyy");
-        LocalDateTime now = LocalDateTime.now();
-        date.setText(dtf.format(now));
     }
 
     public void newEntry(View view) {
         Intent intent = new Intent(this, EntryForm.class);
         save();
-        intent.putParcelableArrayListExtra("editList", entryList.getList());
         startActivity(intent);
     }
-
-    /*
-    @Override
-    public void onRestoreInstanceState(Bundle savedInstance){
-        onCreate(savedInstance);
-    }*/
 
     public void save() {
         try
         {
-            File file = new File(getFilesDir() + "/output.txt");
+            File file = new File(getFilesDir() + FILE_NAME);
             if (!file.exists()) {
                 file.createNewFile();
             }
@@ -136,12 +90,12 @@ public class WorkoutList extends AppCompatActivity {
         }
     }
 
-    public ArrayList<Entry> load() {
-        ArrayList<Entry> loadList = new ArrayList<Entry>();
+    public ArrayList<Workout> load() {
+        ArrayList<Workout> loadList = new ArrayList<Workout>();
         try {
-            FileInputStream fos = new FileInputStream(getFilesDir() + "/output.txt");
+            FileInputStream fos = new FileInputStream(getFilesDir() + FILE_NAME);
             ObjectInputStream oos = new ObjectInputStream(fos);
-            loadList = (ArrayList<Entry>) oos.readObject();
+            loadList = (ArrayList<Workout>) oos.readObject();
             replacePos = (int) oos.readObject();
             oos.close();
             fos.close();
@@ -149,27 +103,5 @@ public class WorkoutList extends AppCompatActivity {
             ex.printStackTrace();
         }
         return loadList;
-    }
-
-    public void submit(View v) {
-        if(!inputIsValid()) {
-            Context context = getApplicationContext();
-            CharSequence text = "Must have at least one exercise per workout.";
-            int duration = Toast.LENGTH_SHORT;
-
-            Toast toast = Toast.makeText(context, text, duration);
-            toast.show();
-
-            return;
-        }
-        Intent intent = new Intent(this, MainActivity.class);
-        TextView date = (TextView) findViewById(R.id.textView3);
-        entryList.setDate(date.getText().toString());
-        intent.putParcelableArrayListExtra("finalEntry", entryList.getList());
-        startActivity(intent);
-    }
-
-    public boolean inputIsValid() {
-        return entryList.getCount() > 0;
     }
 }

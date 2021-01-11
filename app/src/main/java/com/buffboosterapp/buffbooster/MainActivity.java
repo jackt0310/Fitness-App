@@ -27,74 +27,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Button btn = (Button) findViewById(R.id.button);
+        Button btn = (Button) findViewById(R.id.buttonWorkout);
 
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                newEntry(v);
+                Intent intent = new Intent(MainActivity.this, WorkoutList.class);
+                startActivity(intent);
             }
         });
-
-        ListView list = (ListView) findViewById(R.id.listArea);
-        //instantiate custom adapter
-        ArrayList<ArrayList<Entry>> entries = load();
-        entryList = new WorkoutAdapter(entries, this, replacePos);
-
-        list.setAdapter(entryList);
-
-        Intent i = getIntent();
-
-        // Takes information from last page (if applicable)
-        if(i.getParcelableArrayListExtra("finalEntry") != null) {
-            ArrayList<Entry> entry = i.getParcelableArrayListExtra("finalEntry");
-            if(entryList.replacePos != -1) {
-                entryList.replace(entryList.replacePos, entry);
-                entryList.replacePos = -1;
-            } else {
-                entryList.add(entry);
-            }
-            entryList.notifyDataSetChanged();
-            save();
-        }
-    }
-
-    public void newEntry(View view) {
-        Intent intent = new Intent(this, WorkoutList.class);
-        save();
-        startActivity(intent);
-    }
-
-    public void save() {
-        try
-        {
-            File file = new File(getFilesDir() + "/main.txt");
-            if (!file.exists()) {
-                file.createNewFile();
-            }
-            FileOutputStream fos = new FileOutputStream(file);
-            ObjectOutputStream oos = new ObjectOutputStream(fos);
-            oos.writeObject(entryList.getList());
-            oos.writeObject(entryList.replacePos);
-            oos.close();
-            fos.close();
-        } catch(Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    public ArrayList<ArrayList<Entry>> load() {
-        ArrayList<ArrayList<Entry>> loadList = new ArrayList<ArrayList<Entry>>();
-        try {
-            FileInputStream fos = new FileInputStream(getFilesDir() + "/main.txt");
-            ObjectInputStream oos = new ObjectInputStream(fos);
-            loadList = (ArrayList<ArrayList<Entry>>) oos.readObject();
-            replacePos = (int) oos.readObject();
-            oos.close();
-            fos.close();
-        } catch(Exception ex) {
-            ex.printStackTrace();
-        }
-        return loadList;
     }
 }

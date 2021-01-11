@@ -1,6 +1,7 @@
 package com.buffboosterapp.buffbooster;
 
 import android.content.Intent;
+import android.os.Parcelable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -18,34 +19,34 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 public class WorkoutAdapter extends BaseAdapter implements ListAdapter {
-    ArrayList<ArrayList<Entry>> entry;
-    static MainActivity main;
+    ArrayList<Workout> workouts;
+    static WorkoutList main;
     int replacePos;
 
     public WorkoutAdapter() {
-        entry = new ArrayList<ArrayList<Entry>>();
+        workouts = new ArrayList<Workout>();
         main = null;
         replacePos = -1;
     }
 
-    public WorkoutAdapter(ArrayList<ArrayList<Entry>> entry, MainActivity main, int replacePos) {
-        this.entry = entry;
+    public WorkoutAdapter(ArrayList<Workout> workouts, WorkoutList main, int replacePos) {
+        this.workouts = workouts;
         this.main = main;
         this.replacePos = replacePos;
     }
 
-    public ArrayList<ArrayList<Entry>> getList() {
-        return entry;
+    public ArrayList<Workout> getList() {
+        return workouts;
     }
 
     @Override
     public int getCount() {
-        return entry.size();
+        return workouts.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return entry.get(position);
+        return workouts.get(position);
     }
 
     @Override
@@ -53,16 +54,16 @@ public class WorkoutAdapter extends BaseAdapter implements ListAdapter {
         return position;
     }
 
-    void add(ArrayList<Entry> element) {
-        entry.add(0, element);
+    void add(Workout element) {
+        workouts.add(0, element);
     }
 
-    void add(int pos, ArrayList<Entry> element) {
-        entry.add(pos, element);
+    void add(int pos, Workout element) {
+        workouts.add(pos, element);
     }
 
-    void replace(int pos, ArrayList<Entry> element) {
-        entry.set(pos, element);
+    void replace(int pos, Workout element) {
+        workouts.set(pos, element);
     }
 
     public void save() {
@@ -74,7 +75,7 @@ public class WorkoutAdapter extends BaseAdapter implements ListAdapter {
             }
             FileOutputStream fos = new FileOutputStream(file);
             ObjectOutputStream oos = new ObjectOutputStream(fos);
-            oos.writeObject(entry);
+            oos.writeObject(workouts);
             oos.writeObject(replacePos);
             oos.close();
             fos.close();
@@ -86,17 +87,18 @@ public class WorkoutAdapter extends BaseAdapter implements ListAdapter {
     public void edit(int position) {
         replacePos = position;
         Intent intent = new Intent(main, WorkoutList.class);
-        intent.putParcelableArrayListExtra("editList", entry.get(position));
+        intent.putExtra("editList", (Parcelable) workouts.get(position));
         //entry.remove(position);
         save();
         main.startActivity(intent);
     }
 
     public View getView(int position, View convertView, ViewGroup parent) {
+        /* Horizontal layout containing everything else */
         RelativeLayout horizon = new RelativeLayout(parent.getContext());
-        //horizon.setOrientation(LinearLayout.HORIZONTAL);
         horizon.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT));
 
+        /* Vertical layout containing information on card */
         LinearLayout layout = new LinearLayout(parent.getContext());
         layout.setOrientation(LinearLayout.VERTICAL);
         layout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
@@ -104,13 +106,11 @@ public class WorkoutAdapter extends BaseAdapter implements ListAdapter {
 
         TextView dateText = new TextView(parent.getContext());
         dateText.setLayoutParams(lparams);
-        if(entry.get(position).size() > 0) {
-            dateText.setText(entry.get(position).get(0).date);
-        } else {
-            dateText.setText("N/A");
-        }
+        dateText.setText(workouts.get(position).date);
         dateText.setTextSize(24);
         layout.addView(dateText);
+
+
 
 
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
@@ -119,6 +119,7 @@ public class WorkoutAdapter extends BaseAdapter implements ListAdapter {
 
         layoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
 
+        /* Vertical layout containing buttons */
         LinearLayout buttons = new LinearLayout(parent.getContext());
         buttons.setOrientation(LinearLayout.VERTICAL);
         buttons.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
@@ -143,7 +144,7 @@ public class WorkoutAdapter extends BaseAdapter implements ListAdapter {
         deleteButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                entry.remove(position);
+                workouts.remove(position);
                 notifyDataSetChanged();
                 save();
             }
