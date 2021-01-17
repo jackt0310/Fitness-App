@@ -16,23 +16,38 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-    private WorkoutAdapter entryList;
-
-    private static final String FILE_NAME = "example.txt";
-
-    public int replacePos = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Button btn = (Button) findViewById(R.id.buttonWorkout);
+        Button workout = (Button) findViewById(R.id.buttonWorkout);
 
-        btn.setOnClickListener(new View.OnClickListener() {
+        workout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, WorkoutList.class);
+                startActivity(intent);
+            }
+        });
+
+        Button weightLog = (Button) findViewById(R.id.buttonWeightLog);
+
+        weightLog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, WeightLog.class);
+                startActivity(intent);
+            }
+        });
+
+        Button about = (Button) findViewById(R.id.buttonAbout);
+
+        about.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, About.class);
                 startActivity(intent);
             }
         });
