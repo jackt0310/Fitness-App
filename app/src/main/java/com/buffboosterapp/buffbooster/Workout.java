@@ -10,23 +10,30 @@ public class Workout implements Parcelable {
     String date;
 
     public Workout() {
+        exercises = new ArrayList<Entry>();
         this.date = "Current Date";
     }
 
     public int size() {
+        if(exercises != null) {
+            return exercises.size();
+        }
         return -1;
     }
 
     public Entry get(int position) {
-        return null;
+        return exercises.get(position);
     }
 
+    public void add(Entry entry) {
+        exercises.add(entry);
+    }
     public void add(int position, Entry entry) {
-
+        exercises.add(position, entry);
     }
 
     public void remove(int position) {
-
+        exercises.remove(position);
     }
     /* everything below here is for implementing Parcelable */
 

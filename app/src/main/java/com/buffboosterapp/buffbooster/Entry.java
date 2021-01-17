@@ -28,7 +28,14 @@ public class Entry implements Parcelable, Serializable {
     /* Notes about current exercise */
     public String notes;
 
-    public Entry() {
+    public Entry(String type, String exerciseName, int numSets, boolean usesReps, ArrayList<RepElement> setReps, ArrayList<TimeElement> setTimes, String notes) {
+        this.type = type;
+        this.exerciseName = exerciseName;
+        this.numSets = numSets;
+        this.usesReps = usesReps;
+        this.setReps = setReps;
+        this.setTimes = setTimes;
+        this.notes = notes;
     }
 
 

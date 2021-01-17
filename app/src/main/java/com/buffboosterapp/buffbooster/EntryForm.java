@@ -1,14 +1,18 @@
 package com.buffboosterapp.buffbooster;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupMenu;
@@ -20,6 +24,8 @@ import android.widget.Toast;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
+import androidx.core.content.ContextCompat;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -37,31 +43,112 @@ public class EntryForm extends AppCompatActivity {
 
     public int replacePos = -1;
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_entry_form);
+    private boolean initialSpinner = true;
 
+    private LinearLayout formLayout;
+
+    private Button addButton;
+
+    void removeLayout() {
+        Spinner mySpinner = (Spinner) findViewById(R.id.spinner_type);
+        String type = mySpinner.getSelectedItem().toString();
+
+        EditText exerciseNameForm = findViewById(R.id.exerciseNameForm);
+        String exerciseName =  exerciseNameForm.getText().toString();
+
+        EditText numSetsForm = findViewById(R.id.numSetsForm);
+        int numSets = Integer.parseInt(numSetsForm.getText().toString());
+
+        Spinner spinnerTimeReps = (Spinner) findViewById(R.id.spinnerTimeReps);
+        String timeReps = spinnerTimeReps.getSelectedItem().toString();
+
+        boolean usesReps = false;
+        if(timeReps == "Reps") {
+            usesReps = true;
+        }
+
+        EditText notesForm = findViewById(R.id.notesForm);
+        String notes =  notesForm.getText().toString();
+
+        ArrayList<RepElement> setReps = new ArrayList<RepElement>();
+
+        for(int i = 0; i < numSets; i++) {
+            EditText repsForm = findViewById(R.id.editRepsForm + i);
+            int reps = Integer.parseInt(repsForm.getText().toString());
+
+            EditText weightForm = findViewById(R.id.editWeightForm + i);
+            int weight = Integer.parseInt(weightForm.getText().toString());
+
+            Spinner spinnerWeightUnits = (Spinner) findViewById(R.id.unitSpinner + i);
+            String weightUnits = spinnerWeightUnits.getSelectedItem().toString();
+
+            RepElement rep = new RepElement(reps, true, weight, weightUnits);
+            setReps.add(rep);
+        }
+
+        Entry entry = new Entry(type, exerciseName, numSets, usesReps, setReps, null, notes);
+        currentWorkout.add(entry);
+
+        currentWorkout.notifyDataSetChanged();
         LinearLayout root = (LinearLayout)findViewById(R.id.root);
-        Button btn = (Button) findViewById(R.id.button);
+        root.removeView(formLayout);
+        Button btn = new Button(EntryForm.this);
+        btn.setBackgroundColor(ContextCompat.getColor(EntryForm.this, R.color.purple_500));
+        btn.setTextColor(Color.WHITE);
+        btn.setText("ADD NEW EXERCISE");
+        btn.setId(R.id.exerciseButton);
+        setOnClick(btn);
+        root.addView(btn);
+        addButton = btn;
+    }
 
+    void setOnClick(Button btn) {
+        LinearLayout root = (LinearLayout)findViewById(R.id.root);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LinearLayout layout = new LinearLayout(EntryForm.this);
+                formLayout = new LinearLayout(EntryForm.this);
+                formLayout.setOrientation(formLayout.VERTICAL);
                 ArrayList<String> spinnerArray = new ArrayList<String>();
                 spinnerArray.add("Custom");
 
                 Spinner spinner = new Spinner(EntryForm.this);
                 spinner.setPrompt("Choose an exercise...");
+                spinner.setId(R.id.spinner_type);
                 ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(EntryForm.this, android.R.layout.simple_spinner_dropdown_item, spinnerArray);
                 spinner.setAdapter(spinnerArrayAdapter);
 
                 spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
                     @Override
                     public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                        // your code here
+
+                        LayoutInflater inflater = getLayoutInflater();
+                        ConstraintLayout layout = (ConstraintLayout) inflater.inflate(R.layout.exercise_custom, root, false);
+                        formLayout.addView(layout);
+
+                        for(int i = 0; i < 3; i++) {
+                            inflater = getLayoutInflater();
+                            layout = (ConstraintLayout) inflater.inflate(R.layout.set_reps, root, false);
+                            layout.getViewById(R.id.editRepsForm).setId(R.id.editRepsForm + i);
+                            layout.getViewById(R.id.editWeightForm).setId(R.id.editWeightForm + i);
+                            layout.getViewById(R.id.unitSpinner).setId(R.id.unitSpinner + i);
+                            formLayout.addView(layout);
+                        }
+
+                        inflater = getLayoutInflater();
+                        layout = (ConstraintLayout) inflater.inflate(R.layout.notes_form, root, false);
+                        formLayout.addView(layout);
+
+                        Button addExerciseBtn = new Button(EntryForm.this);
+                        addExerciseBtn.setText("ADD EXERCISE");
+                        addExerciseBtn.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                removeLayout();
+                            }
+                        });
+                        formLayout.addView(addExerciseBtn);
                     }
 
                     @Override
@@ -71,11 +158,23 @@ public class EntryForm extends AppCompatActivity {
 
                 });
 
-                root.removeView(findViewById(R.id.button));
-                root.addView(spinner);
+                root.removeView(addButton);
+                formLayout.addView(spinner);
+                root.addView(formLayout);
 
             }
         });
+    }
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_entry_form);
+
+        addButton = (Button) findViewById(R.id.button);
+        setOnClick(addButton);
+
+
 
         ListView list = (ListView) findViewById(R.id.listArea);
 

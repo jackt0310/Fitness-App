@@ -12,4 +12,11 @@ public class RepElement {
 
     /* Units for weight - ex: lbs */
     String weightUnits;
+
+    public RepElement(int reps, boolean usesWeight, int weight, String weightUnits) {
+        this.reps = reps;
+        this.usesWeight = usesWeight;
+        this.weight = weight;
+        this.weightUnits = weightUnits;
+    }
 }

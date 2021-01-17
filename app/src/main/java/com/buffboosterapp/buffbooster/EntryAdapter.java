@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.RelativeLayout;
@@ -56,7 +58,7 @@ public class EntryAdapter extends BaseAdapter implements ListAdapter {
     }
 
     void add(Entry element) {
-        workout.add(0, element);
+        workout.add(element);
     }
 
     void add(int pos, Entry element) {
@@ -117,15 +119,31 @@ public class EntryAdapter extends BaseAdapter implements ListAdapter {
         exerciseText.setTextSize(19);
         layout.addView(exerciseText);
 
-        /*
         TextView detailsText = new TextView(parent.getContext());
         detailsText.setLayoutParams(lparams);
-        detailsText.setText(entry.get(position).sets + "x" + entry.get(position).reps + " @ " + entry.get(position).weight + "lb");
+
+        detailsText.setText(workout.get(position).numSets + " Sets");
         detailsText.setTextSize(19);
         layout.addView(detailsText);
-        */
 
+        for(int i = 0; i < workout.get(position).numSets; i++) {
+            TextView setText = new TextView(parent.getContext());
+            setText.setLayoutParams(lparams);
 
+            setText.setText("     " + workout.get(position).setReps.get(i).reps + " Reps @ " + workout.get(position).setReps.get(i).weight + workout.get(position).setReps.get(i).weightUnits);
+
+            setText.setTextSize(19);
+            layout.addView(setText);
+        }
+
+        if(!workout.get(position).notes.equals("")) {
+            TextView notesText = new TextView(parent.getContext());
+            notesText.setLayoutParams(lparams);
+
+            notesText.setText("Notes: " + workout.get(position).notes);
+            notesText.setTextSize(19);
+            layout.addView(notesText);
+        }
 
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
                 RelativeLayout.LayoutParams.WRAP_CONTENT,
@@ -137,10 +155,12 @@ public class EntryAdapter extends BaseAdapter implements ListAdapter {
         buttons.setOrientation(LinearLayout.VERTICAL);
         buttons.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
 
-        Button editButton = new Button(parent.getContext());
-        editButton.setLayoutParams(lparams);
-        editButton.setText("Edit");
-        editButton.setTextSize(20);
+        ImageButton editButton = new ImageButton(parent.getContext());
+        editButton.setImageResource(R.drawable.pencil);
+        editButton.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        editButton.setLayoutParams(new LinearLayout.LayoutParams(150, 150));
+        editButton.setBackground(null);
+
         editButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
@@ -149,10 +169,12 @@ public class EntryAdapter extends BaseAdapter implements ListAdapter {
         });
         buttons.addView(editButton);
 
-        Button deleteButton = new Button(parent.getContext());
-        deleteButton.setLayoutParams(lparams);
-        deleteButton.setText("Delete");
-        deleteButton.setTextSize(20);
+        ImageButton deleteButton = new ImageButton(parent.getContext());
+        deleteButton.setImageResource(R.drawable.deleteicon);
+        deleteButton.setScaleType(ImageView.ScaleType.FIT_CENTER);
+
+        deleteButton.setLayoutParams(new LinearLayout.LayoutParams(150, 150));
+        deleteButton.setBackground(null);
 
         deleteButton.setOnClickListener(new View.OnClickListener(){
             @Override

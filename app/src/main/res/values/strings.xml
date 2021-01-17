@@ -2,4 +2,11 @@
     <string name="app_name">BuffBooster</string>
     <string name="CreateEntry">CREATE NEW ENTRY</string>
     <string name="AddExercise">ADD NEW EXERCISE</string>
+    <string-array name="spinnerTimeReps">
+        <item>Reps</item>
+        <item>Time</item>
+    </string-array>
+    <string-array name="spinnerWeightUnits">
+        <item>lb</item>
+    </string-array>
 </resources>
