@@ -79,6 +79,11 @@ public class WeightAdapter extends BaseAdapter implements ListAdapter {
                     done = true;
                 }
             }
+            if(!done) {
+                WeightWeek week = new WeightWeek(entry.getWeekStart(), entry.getWeekEnd());
+                week.weightEntries.add(entry);
+                weightWeeks.add(week);
+            }
         }
     }
 
@@ -124,7 +129,7 @@ public class WeightAdapter extends BaseAdapter implements ListAdapter {
 
         TextView dateText = new TextView(parent.getContext());
         dateText.setLayoutParams(lparams);
-        dateText.setText("Week " + position + " (" + weightWeeks.get(position).getDateRange() + ")");
+        dateText.setText("Week " + (position + 1) + " (" + weightWeeks.get(position).getDateRange() + ")");
         dateText.setTextSize(20);
         layout.addView(dateText);
 
@@ -136,7 +141,7 @@ public class WeightAdapter extends BaseAdapter implements ListAdapter {
 
         TextView avgText = new TextView(parent.getContext());
         avgText.setLayoutParams(lparams);
-        avgText.setText("Average weight: " + weightWeeks.get(position).getAvgWeight() + "lb");
+        avgText.setText("Average weight: " + String.format("%.2f", weightWeeks.get(position).getAvgWeight()) + "lb");
         avgText.setTextSize(20);
         layout.addView(avgText);
 

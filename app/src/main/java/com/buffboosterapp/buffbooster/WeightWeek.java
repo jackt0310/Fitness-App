@@ -4,11 +4,12 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
-public class WeightWeek {
+public class WeightWeek implements Serializable {
     LocalDate startDate;
     LocalDate endDate;
     ArrayList<WeightEntry> weightEntries;

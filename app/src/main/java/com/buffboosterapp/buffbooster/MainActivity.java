@@ -51,5 +51,15 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        Button progressPics = (Button) findViewById(R.id.buttonProgressPics);
+
+        progressPics.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, ProgressPictures.class);
+                startActivity(intent);
+            }
+        });
     }
 }

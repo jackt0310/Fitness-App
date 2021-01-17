@@ -17,14 +17,17 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.utils.Utils;
+import com.github.mikephil.charting.utils.ViewPortHandler;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -38,6 +41,10 @@ import java.util.ArrayList;
 public class WeightLog extends AppCompatActivity {
     private WeightAdapter entryList;
     LineChart mChart;
+
+    private static final String FILE_NAME = "weightLog.txt";
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,11 +67,17 @@ public class WeightLog extends AppCompatActivity {
 
         list.setAdapter(entryList);
 
-        mChart = findViewById(R.id.lineChart);
         setData();
 
+    }
 
-        LimitLine ll2 = new LimitLine(155f, "Goal");
+    private void setData() {
+
+        mChart = findViewById(R.id.lineChart);
+
+        float goalWeight = 175f;
+        LimitLine ll2 = new LimitLine(goalWeight, "Goal");
+        ll2.setTextSize(15f);
         ll2.setLineWidth(4f);
         ll2.enableDashedLine(10f, 10f, 0f);
         ll2.setLineColor(Color.GREEN);
@@ -91,14 +104,35 @@ public class WeightLog extends AppCompatActivity {
         xAxis.setTextSize(15f);
 
         mChart.setExtraBottomOffset(5f);
+        xAxis.setGranularity(1f);
 
-    }
+        leftAxis.setGranularity(1f);
+        //mChart.getXAxis().setAxisMaximum(1f);
+        mChart.invalidate();
 
-    private void setData() {
+        mChart.getAxisLeft().setDrawGridLines(false);
+        mChart.getXAxis().setDrawGridLines(false);
         ArrayList<com.github.mikephil.charting.data.Entry> values = new ArrayList<>();
-        values.add(new com.github.mikephil.charting.data.Entry(1, 150));
-        values.add(new com.github.mikephil.charting.data.Entry(2, 155));
-        values.add(new com.github.mikephil.charting.data.Entry(3, 160));
+        float min = 999999f;
+        float max = 0f;
+
+        for(int i = 0; i < entryList.getCount(); i++) {
+            values.add(new com.github.mikephil.charting.data.Entry(i + 1, (float) entryList.weightWeeks.get(i).getAvgWeight()));
+            if((float) entryList.weightWeeks.get(i).getAvgWeight() < min) {
+                min = (float) entryList.weightWeeks.get(i).getAvgWeight();
+            } else if((float) entryList.weightWeeks.get(i).getAvgWeight() > max) {
+                max = (float) entryList.weightWeeks.get(i).getAvgWeight();
+            }
+        }
+
+        goalWeight = 175f;
+        if(max < goalWeight) {
+            max = goalWeight;
+        }
+
+        leftAxis = mChart.getAxisLeft();
+        leftAxis.setAxisMinimum(min - 15);
+        leftAxis.setAxisMaximum(max + 15);
         LineDataSet set1;
         if (mChart.getData() != null &&
                 mChart.getData().getDataSetCount() > 0) {
@@ -127,6 +161,30 @@ public class WeightLog extends AppCompatActivity {
             ArrayList<ILineDataSet> dataSets = new ArrayList<>();
             dataSets.add(set1);
             LineData data = new LineData(dataSets);
+            mChart.getXAxis().setValueFormatter(new ValueFormatter() {
+                @Override
+                public String getFormattedValue(float value) {
+                    if (value>0){
+                        return Math.round(value) + "";
+                    }else{
+                        return "";
+                    }
+                }
+            });
+
+            leftAxis.setValueFormatter(new ValueFormatter() {
+                @Override
+                public String getFormattedValue(float value) {
+                    return Math.round(value) + "";
+                }
+            });
+
+            data.setValueFormatter(new ValueFormatter() {
+                @Override
+                public String getFormattedValue(float value) {
+                    return String.format("%.2f", value) + " lb";
+                }
+            });
             mChart.setData(data);
         }
     }
@@ -139,10 +197,11 @@ public class WeightLog extends AppCompatActivity {
         WeightEntry entry = new WeightEntry(weight, LocalDateTime.now());
         entryList.addWeightEntry(entry);
         entryList.notifyDataSetChanged();
+        setData();
+        save();
     }
 
     public void save() {
-        /*
         try
         {
             File file = new File(getFilesDir() + FILE_NAME);
@@ -152,27 +211,24 @@ public class WeightLog extends AppCompatActivity {
             FileOutputStream fos = new FileOutputStream(file);
             ObjectOutputStream oos = new ObjectOutputStream(fos);
             oos.writeObject(entryList.getList());
-            oos.writeObject(entryList.replacePos);
             oos.close();
             fos.close();
         } catch(Exception ex) {
             ex.printStackTrace();
-        }*/
+        }
     }
 
     public ArrayList<WeightWeek> load() {
         ArrayList<WeightWeek> loadList = new ArrayList<WeightWeek>();
-        /*
         try {
             FileInputStream fos = new FileInputStream(getFilesDir() + FILE_NAME);
             ObjectInputStream oos = new ObjectInputStream(fos);
-            loadList = (ArrayList<Workout>) oos.readObject();
-            replacePos = (int) oos.readObject();
+            loadList = (ArrayList<WeightWeek>) oos.readObject();
             oos.close();
             fos.close();
         } catch(Exception ex) {
             ex.printStackTrace();
-        }*/
+        }
         return loadList;
     }
 }
