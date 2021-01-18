@@ -72,7 +72,7 @@ public class WeightLog extends AppCompatActivity {
 
     }
 
-    private void setData() {
+    public void setData() {
         loadGoal();
 
         mChart = findViewById(R.id.lineChart);

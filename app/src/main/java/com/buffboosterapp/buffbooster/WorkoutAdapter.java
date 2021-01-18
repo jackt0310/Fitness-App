@@ -6,6 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.RelativeLayout;
@@ -124,10 +126,12 @@ public class WorkoutAdapter extends BaseAdapter implements ListAdapter {
         buttons.setOrientation(LinearLayout.VERTICAL);
         buttons.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
 
-        Button editButton = new Button(parent.getContext());
-        editButton.setLayoutParams(lparams);
-        editButton.setText("Edit");
-        editButton.setTextSize(20);
+        ImageButton editButton = new ImageButton(parent.getContext());
+        editButton.setImageResource(R.drawable.pencil);
+        editButton.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        editButton.setLayoutParams(new LinearLayout.LayoutParams(150, 150));
+        editButton.setBackground(null);
+
         editButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
@@ -136,10 +140,12 @@ public class WorkoutAdapter extends BaseAdapter implements ListAdapter {
         });
         buttons.addView(editButton);
 
-        Button deleteButton = new Button(parent.getContext());
-        deleteButton.setLayoutParams(lparams);
-        deleteButton.setText("Delete");
-        deleteButton.setTextSize(20);
+        ImageButton deleteButton = new ImageButton(parent.getContext());
+        deleteButton.setImageResource(R.drawable.deleteicon);
+        deleteButton.setScaleType(ImageView.ScaleType.FIT_CENTER);
+
+        deleteButton.setLayoutParams(new LinearLayout.LayoutParams(150, 150));
+        deleteButton.setBackground(null);
 
         deleteButton.setOnClickListener(new View.OnClickListener(){
             @Override

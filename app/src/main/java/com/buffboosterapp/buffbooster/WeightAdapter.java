@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.RelativeLayout;
@@ -18,6 +20,7 @@ import androidx.cardview.widget.CardView;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class WeightAdapter extends BaseAdapter implements ListAdapter {
@@ -88,22 +91,8 @@ public class WeightAdapter extends BaseAdapter implements ListAdapter {
     }
 
     public void save() {
-        /*
-        try
-        {
-            File file = new File(main.getFilesDir() + "/main.txt");
-            if (!file.exists()) {
-                file.createNewFile();
-            }
-            FileOutputStream fos = new FileOutputStream(file);
-            ObjectOutputStream oos = new ObjectOutputStream(fos);
-            oos.writeObject(workouts);
-            oos.writeObject(replacePos);
-            oos.close();
-            fos.close();
-        } catch(Exception ex) {
-            ex.printStackTrace();
-        }*/
+        main.save();
+        main.setData();
     }
 
     public void edit(int position) {
@@ -133,6 +122,44 @@ public class WeightAdapter extends BaseAdapter implements ListAdapter {
         dateText.setTextSize(20);
         layout.addView(dateText);
 
+        for(int i = 0; i < weightWeeks.get(position).weightEntries.size(); i++) {
+            RelativeLayout horizonWeight = new RelativeLayout(parent.getContext());
+            horizon.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT));
+
+            TextView singleWeight = new TextView(parent.getContext());
+            singleWeight.setLayoutParams(lparams);
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+
+            singleWeight.setText(dtf.format(weightWeeks.get(position).weightEntries.get(i).date) + ": " + weightWeeks.get(position).weightEntries.get(i).weight + "lbs");
+
+            horizonWeight.addView(singleWeight);
+
+            ImageButton deleteButton = new ImageButton(parent.getContext());
+            deleteButton.setImageResource(R.drawable.deleteicon);
+            deleteButton.setScaleType(ImageView.ScaleType.FIT_CENTER);
+
+            //deleteButton.setLayoutParams(new LinearLayout.LayoutParams(30, 30));
+            deleteButton.setBackground(null);
+
+            int finalI = i;
+            deleteButton.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v) {
+                    weightWeeks.get(position).weightEntries.remove(finalI);
+                    notifyDataSetChanged();
+                    save();
+                }
+            });
+
+            RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
+                    120,120);
+
+            layoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+            deleteButton.setLayoutParams(layoutParams);
+            horizonWeight.addView(deleteButton);
+
+            layout.addView(horizonWeight);
+        }
         TextView countText = new TextView(parent.getContext());
         countText.setLayoutParams(lparams);
         countText.setText("Entries: " + weightWeeks.get(position).weightEntries.size());
@@ -158,10 +185,12 @@ public class WeightAdapter extends BaseAdapter implements ListAdapter {
         buttons.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
 
         /*
-        Button editButton = new Button(parent.getContext());
-        editButton.setLayoutParams(lparams);
-        editButton.setText("Edit");
-        editButton.setTextSize(20);
+        ImageButton editButton = new ImageButton(parent.getContext());
+        editButton.setImageResource(R.drawable.pencil);
+        editButton.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        editButton.setLayoutParams(new LinearLayout.LayoutParams(150, 150));
+        editButton.setBackground(null);
+
         editButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
@@ -170,26 +199,8 @@ public class WeightAdapter extends BaseAdapter implements ListAdapter {
         });
         buttons.addView(editButton);
 
-        Button deleteButton = new Button(parent.getContext());
-        deleteButton.setLayoutParams(lparams);
-        deleteButton.setText("Delete");
-        deleteButton.setTextSize(20);
 
-        deleteButton.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                workouts.remove(position);
-                notifyDataSetChanged();
-                save();
-            }
-        });
-
-        buttons.addView(deleteButton);
-
-        buttons.setLayoutParams(layoutParams);
-
-
-         */
+        buttons.setLayoutParams(layoutParams);*/
         horizon.addView(layout);
         //horizon.addView(buttons);
 
