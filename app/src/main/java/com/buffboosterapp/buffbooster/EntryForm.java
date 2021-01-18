@@ -108,6 +108,8 @@ public class EntryForm extends AppCompatActivity {
 
 
         currentWorkout.notifyDataSetChanged();
+        ListView list = (ListView) findViewById(R.id.listArea);
+        UIUtils.setListViewHeightBasedOnItems(list);
         LinearLayout root = (LinearLayout)findViewById(R.id.root);
         root.removeView(formLayout);
         Button btn = new Button(EntryForm.this);
@@ -179,6 +181,8 @@ public class EntryForm extends AppCompatActivity {
         }
 
         currentWorkout.notifyDataSetChanged();
+        ListView list = (ListView) findViewById(R.id.listArea);
+        UIUtils.setListViewHeightBasedOnItems(list);
         LinearLayout root = (LinearLayout)findViewById(R.id.root);
         root.removeView(formLayout);
         Button btn = new Button(EntryForm.this);
@@ -356,7 +360,7 @@ public class EntryForm extends AppCompatActivity {
 
 
         list.setAdapter(currentWorkout);
-
+        UIUtils.setListViewHeightBasedOnItems(list);
 /*      if(i.getParcelableExtra("entry") != null) {
             Entry entry = (Entry) i.getParcelableExtra("entry");
             if(currentWorkout.replacePos != -1) {
