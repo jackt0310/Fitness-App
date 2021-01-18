@@ -3,9 +3,10 @@ package com.buffboosterapp.buffbooster;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Workout implements Parcelable {
+public class Workout implements Parcelable, Serializable {
     ArrayList<Entry> exercises;
     String date;
 
@@ -46,7 +47,8 @@ public class Workout implements Parcelable {
     // write your object's data to the passed-in Parcel
     @Override
     public void writeToParcel(Parcel out, int flags) {
-            out.writeString(date);
+        out.writeList(exercises);
+        out.writeString(date);
     }
 
     // this is used to regenerate your object. All Parcelables must have a CREATOR that implements these two methods
@@ -63,6 +65,7 @@ public class Workout implements Parcelable {
 
     // example constructor that takes a Parcel and gives you an object populated with it's values
     private Workout(Parcel in) {
+        exercises = in.readArrayList(Workout.class.getClassLoader());
         date = in.readString();
     }
 }

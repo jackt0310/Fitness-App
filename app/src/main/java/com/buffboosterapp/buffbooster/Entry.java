@@ -1,7 +1,10 @@
 package com.buffboosterapp.buffbooster;
 
+import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import androidx.annotation.RequiresApi;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -48,12 +51,21 @@ public class Entry implements Parcelable, Serializable {
     }
 
     // write your object's data to the passed-in Parcel
+    @RequiresApi(api = Build.VERSION_CODES.Q)
     @Override
     public void writeToParcel(Parcel out, int flags) {
+        out.writeString(type);
+        out.writeString(exerciseName);
+        out.writeInt(numSets);
+        out.writeBoolean(usesReps);
+        out.writeList(setReps);
+        out.writeList(setTimes);
+        out.writeString(notes);
     }
 
     // this is used to regenerate your object. All Parcelables must have a CREATOR that implements these two methods
     public static final Parcelable.Creator<Entry> CREATOR = new Parcelable.Creator<Entry>() {
+        @RequiresApi(api = Build.VERSION_CODES.Q)
         @Override
         public Entry createFromParcel(Parcel in) {
             return new Entry(in);
@@ -65,7 +77,15 @@ public class Entry implements Parcelable, Serializable {
     };
 
     // example constructor that takes a Parcel and gives you an object populated with it's values
+    @RequiresApi(api = Build.VERSION_CODES.Q)
     private Entry(Parcel in) {
+        type = in.readString();
+        exerciseName = in.readString();
+        numSets = in.readInt();
+        usesReps = in.readBoolean();
+        setReps = in.readArrayList(Entry.class.getClassLoader());
+        setTimes = in.readArrayList(Entry.class.getClassLoader());
+        notes = in.readString();
     }
 
 }

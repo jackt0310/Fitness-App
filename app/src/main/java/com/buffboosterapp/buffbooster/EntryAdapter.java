@@ -24,18 +24,15 @@ import java.util.ArrayList;
 public class EntryAdapter extends BaseAdapter implements ListAdapter {
     Workout workout;
     static EntryForm main;
-    int replacePos;
 
     public EntryAdapter() {
         workout = new Workout();
         main = null;
-        replacePos = -1;
     }
 
-    public EntryAdapter(Workout workout, EntryForm main, int replacePos) {
+    public EntryAdapter(Workout workout, EntryForm main) {
         this.workout = workout;
         this.main = main;
-        this.replacePos = replacePos;
     }
 
     public Workout getWorkout() {
@@ -87,18 +84,24 @@ public class EntryAdapter extends BaseAdapter implements ListAdapter {
             ex.printStackTrace();
         }
     }
+    */
+    void replace(int pos, Entry element) {
+        System.out.println(pos + " replace");
+        workout.remove(pos);
+        workout.add(pos, element);
+    }
 
     public void edit(int position) {
-
-        replacePos = position;
+        main.setEditView(position);
+                /*
         Intent intent = new Intent(main, EntryForm.class);
         intent.putExtra("editEntry", (Parcelable) entry.get(position));
         entry.remove(position);
         save();
         intent.putExtra("editPos", position);
         intent.putParcelableArrayListExtra("editList", entry);
-        main.startActivity(intent);
-    }*/
+        main.startActivity(intent);*/
+    }
 
     public View getView(int position, View convertView, ViewGroup parent) {
         /* Horizontal layout containing everything within card */
@@ -130,7 +133,11 @@ public class EntryAdapter extends BaseAdapter implements ListAdapter {
             TextView setText = new TextView(parent.getContext());
             setText.setLayoutParams(lparams);
 
-            setText.setText("     " + workout.get(position).setReps.get(i).reps + " Reps @ " + workout.get(position).setReps.get(i).weight + workout.get(position).setReps.get(i).weightUnits);
+            if(workout.get(position).usesReps) {
+                setText.setText("     " + workout.get(position).setReps.get(i).reps + " Reps @ " + workout.get(position).setReps.get(i).weight + workout.get(position).setReps.get(i).weightUnits);
+            } else {
+                setText.setText("     " + workout.get(position).setTimes.get(i).time + " " + workout.get(position).setTimes.get(i).timeUnits + " @ " + workout.get(position).setTimes.get(i).weight + workout.get(position).setTimes.get(i).weightUnits);
+            }
 
             setText.setTextSize(19);
             layout.addView(setText);
@@ -164,7 +171,7 @@ public class EntryAdapter extends BaseAdapter implements ListAdapter {
         editButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                //edit(position);
+                edit(position);
             }
         });
         buttons.addView(editButton);

@@ -1,12 +1,13 @@
 package com.buffboosterapp.buffbooster;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -15,8 +16,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.PopupMenu;
-import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,14 +23,8 @@ import android.widget.Toast;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.content.ContextCompat;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -49,6 +42,10 @@ public class EntryForm extends AppCompatActivity {
 
     private Button addButton;
 
+    boolean usesReps = true;
+
+    boolean spinnerFirst = true;
+
     void removeLayout() {
         Spinner mySpinner = (Spinner) findViewById(R.id.spinner_type);
         String type = mySpinner.getSelectedItem().toString();
@@ -62,32 +59,124 @@ public class EntryForm extends AppCompatActivity {
         Spinner spinnerTimeReps = (Spinner) findViewById(R.id.spinnerTimeReps);
         String timeReps = spinnerTimeReps.getSelectedItem().toString();
 
-        boolean usesReps = false;
-        if(timeReps == "Reps") {
-            usesReps = true;
+        EditText notesForm = findViewById(R.id.notesForm);
+        String notes =  notesForm.getText().toString();
+
+        if(usesReps) {
+            ArrayList<RepElement> setReps = new ArrayList<RepElement>();
+
+            for(int i = 0; i < numSets; i++) {
+                EditText repsForm = findViewById(R.id.editRepsForm + i);
+                int reps = Integer.parseInt(repsForm.getText().toString());
+
+                EditText weightForm = findViewById(R.id.editWeightForm + i);
+                int weight = Integer.parseInt(weightForm.getText().toString());
+
+                Spinner spinnerWeightUnits = (Spinner) findViewById(R.id.unitSpinner + i);
+                String weightUnits = spinnerWeightUnits.getSelectedItem().toString();
+
+                RepElement rep = new RepElement(reps, true, weight, weightUnits);
+                setReps.add(rep);
+            }
+            Entry entry = new Entry(type, exerciseName, numSets, true, setReps, null, notes);
+            currentWorkout.add(entry);
+        } else {
+            ArrayList<TimeElement> setTime = new ArrayList<TimeElement>();
+
+            for(int i = 0; i < numSets; i++) {
+                EditText repsForm = findViewById(R.id.editRepsForm + i);
+                int time = Integer.parseInt(repsForm.getText().toString());
+
+                EditText weightForm = findViewById(R.id.editWeightForm + i);
+                int weight = Integer.parseInt(weightForm.getText().toString());
+
+                Spinner spinnerWeightUnits = (Spinner) findViewById(R.id.unitSpinner + i);
+                String weightUnits = spinnerWeightUnits.getSelectedItem().toString();
+
+                Spinner spinnerTimeUnits = (Spinner) findViewById(R.id.unitSpinner2 + i);
+                String timeUnits = spinnerTimeUnits.getSelectedItem().toString();
+
+
+                TimeElement timeEl = new TimeElement(time + "", timeUnits, true, weight, weightUnits);
+                setTime.add(timeEl);
+            }
+            Entry entry = new Entry(type, exerciseName, numSets, false, null, setTime, notes);
+            currentWorkout.add(entry);
         }
+
+
+
+
+        currentWorkout.notifyDataSetChanged();
+        LinearLayout root = (LinearLayout)findViewById(R.id.root);
+        root.removeView(formLayout);
+        Button btn = new Button(EntryForm.this);
+        btn.setBackgroundColor(ContextCompat.getColor(EntryForm.this, R.color.purple_500));
+        btn.setTextColor(Color.WHITE);
+        btn.setText("ADD NEW EXERCISE");
+        btn.setId(R.id.exerciseButton);
+        setOnClick(btn);
+        root.addView(btn);
+        addButton = btn;
+    }
+
+    void removeLayoutEdit(int position) {
+        Spinner mySpinner = (Spinner) findViewById(R.id.spinner_type);
+        String type = mySpinner.getSelectedItem().toString();
+
+        EditText exerciseNameForm = findViewById(R.id.exerciseNameForm);
+        String exerciseName =  exerciseNameForm.getText().toString();
+
+        EditText numSetsForm = findViewById(R.id.numSetsForm);
+        int numSets = Integer.parseInt(numSetsForm.getText().toString());
+
+        Spinner spinnerTimeReps = (Spinner) findViewById(R.id.spinnerTimeReps);
+        String timeReps = spinnerTimeReps.getSelectedItem().toString();
 
         EditText notesForm = findViewById(R.id.notesForm);
         String notes =  notesForm.getText().toString();
 
-        ArrayList<RepElement> setReps = new ArrayList<RepElement>();
+        if(usesReps) {
+            ArrayList<RepElement> setReps = new ArrayList<RepElement>();
 
-        for(int i = 0; i < numSets; i++) {
-            EditText repsForm = findViewById(R.id.editRepsForm + i);
-            int reps = Integer.parseInt(repsForm.getText().toString());
+            for(int i = 0; i < numSets; i++) {
+                EditText repsForm = findViewById(R.id.editRepsForm + i);
+                int reps = Integer.parseInt(repsForm.getText().toString());
 
-            EditText weightForm = findViewById(R.id.editWeightForm + i);
-            int weight = Integer.parseInt(weightForm.getText().toString());
+                EditText weightForm = findViewById(R.id.editWeightForm + i);
+                int weight = Integer.parseInt(weightForm.getText().toString());
 
-            Spinner spinnerWeightUnits = (Spinner) findViewById(R.id.unitSpinner + i);
-            String weightUnits = spinnerWeightUnits.getSelectedItem().toString();
+                Spinner spinnerWeightUnits = (Spinner) findViewById(R.id.unitSpinner + i);
+                String weightUnits = spinnerWeightUnits.getSelectedItem().toString();
 
-            RepElement rep = new RepElement(reps, true, weight, weightUnits);
-            setReps.add(rep);
+                RepElement rep = new RepElement(reps, true, weight, weightUnits);
+                setReps.add(rep);
+            }
+            Entry entry = new Entry(type, exerciseName, numSets, true, setReps, null, notes);
+            currentWorkout.replace(position, entry);
+        } else {
+            ArrayList<TimeElement> setTime = new ArrayList<TimeElement>();
+
+            for(int i = 0; i < numSets; i++) {
+                EditText repsForm = findViewById(R.id.editRepsForm + i);
+                int time = Integer.parseInt(repsForm.getText().toString());
+
+                EditText weightForm = findViewById(R.id.editWeightForm + i);
+                int weight = Integer.parseInt(weightForm.getText().toString());
+
+                Spinner spinnerWeightUnits = (Spinner) findViewById(R.id.unitSpinner + i);
+                String weightUnits = spinnerWeightUnits.getSelectedItem().toString();
+
+                Spinner spinnerTimeUnits = (Spinner) findViewById(R.id.unitSpinner2 + i);
+                String timeUnits = spinnerTimeUnits.getSelectedItem().toString();
+
+
+                TimeElement timeEl = new TimeElement(time + "", timeUnits, true, weight, weightUnits);
+                setTime.add(timeEl);
+            }
+            Entry entry = new Entry(type, exerciseName, numSets, false, null, setTime, notes);
+            currentWorkout.replace(position, entry);
         }
-
-        Entry entry = new Entry(type, exerciseName, numSets, usesReps, setReps, null, notes);
-        currentWorkout.add(entry);
 
         currentWorkout.notifyDataSetChanged();
         LinearLayout root = (LinearLayout)findViewById(R.id.root);
@@ -127,28 +216,55 @@ public class EntryForm extends AppCompatActivity {
                         ConstraintLayout layout = (ConstraintLayout) inflater.inflate(R.layout.exercise_custom, root, false);
                         formLayout.addView(layout);
 
-                        for(int i = 0; i < 3; i++) {
-                            inflater = getLayoutInflater();
-                            layout = (ConstraintLayout) inflater.inflate(R.layout.set_reps, root, false);
-                            layout.getViewById(R.id.editRepsForm).setId(R.id.editRepsForm + i);
-                            layout.getViewById(R.id.editWeightForm).setId(R.id.editWeightForm + i);
-                            layout.getViewById(R.id.unitSpinner).setId(R.id.unitSpinner + i);
-                            formLayout.addView(layout);
-                        }
+                        EditText numSetsForm = (EditText) findViewById(R.id.numSetsForm);
 
-                        inflater = getLayoutInflater();
-                        layout = (ConstraintLayout) inflater.inflate(R.layout.notes_form, root, false);
-                        formLayout.addView(layout);
-
-                        Button addExerciseBtn = new Button(EntryForm.this);
-                        addExerciseBtn.setText("ADD EXERCISE");
-                        addExerciseBtn.setOnClickListener(new View.OnClickListener() {
+                        numSetsForm.addTextChangedListener(new TextWatcher() {
                             @Override
-                            public void onClick(View v) {
-                                removeLayout();
+                            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                            }
+
+                            @Override
+                            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                            }
+
+                            @Override
+                            public void afterTextChanged(Editable s) {
+                                if(!s.toString().equals("")) {
+                                    if(Integer.parseInt(s.toString()) < 1) {
+                                        numSetsForm.setText(1 + "");
+                                    } else if(Integer.parseInt(s.toString()) > 10) {
+                                        numSetsForm.setText(10 + "");
+                                    }
+                                    generateSetsView(Integer.parseInt(numSetsForm.getText().toString()));
+                                }
                             }
                         });
-                        formLayout.addView(addExerciseBtn);
+
+                        Spinner spinnerTimeReps = (Spinner) findViewById(R.id.spinnerTimeReps);
+                        spinnerTimeReps.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+                            @Override
+                            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                                if(spinnerTimeReps.getSelectedItem().toString().equals("Reps")) {
+                                    usesReps = true;
+                                } else {
+                                    usesReps = false;
+                                }
+                                System.out.println("usesReps: " + usesReps);
+                                EditText numSetsForm = (EditText) findViewById(R.id.numSetsForm);
+
+                                if(!numSetsForm.getText().toString().equals("")) {
+                                    generateSetsView(Integer.parseInt(numSetsForm.getText().toString()));
+                                }
+                            }
+
+                            @Override
+                            public void onNothingSelected(AdapterView<?> parentView) {
+                                // your code here
+                            }
+                        });
                     }
 
                     @Override
@@ -165,6 +281,52 @@ public class EntryForm extends AppCompatActivity {
             }
         });
     }
+
+    void generateSetsView(int numSets) {
+        System.out.println("generateSetsView");
+        LinearLayout root = (LinearLayout)findViewById(R.id.root);
+        if(findViewById(R.id.setsLayout) != null) {
+            formLayout.removeView(findViewById(R.id.setsLayout));
+        }
+        LinearLayout setsLayout = new LinearLayout(EntryForm.this);
+        setsLayout.setOrientation(LinearLayout.VERTICAL);
+        setsLayout.setId(R.id.setsLayout);
+        for(int i = 0; i < numSets; i++) {
+            LayoutInflater inflater = getLayoutInflater();
+            inflater = getLayoutInflater();
+            if(usesReps) {
+                ConstraintLayout layout = (ConstraintLayout) inflater.inflate(R.layout.set_reps, root, false);
+                layout.getViewById(R.id.editRepsForm).setId(R.id.editRepsForm + i);
+                layout.getViewById(R.id.editWeightForm).setId(R.id.editWeightForm + i);
+                layout.getViewById(R.id.unitSpinner).setId(R.id.unitSpinner + i);
+                setsLayout.addView(layout);
+            } else {
+                ConstraintLayout layout = (ConstraintLayout) inflater.inflate(R.layout.time_reps, root, false);
+                layout.getViewById(R.id.editRepsForm).setId(R.id.editRepsForm + i);
+                layout.getViewById(R.id.editWeightForm).setId(R.id.editWeightForm + i);
+                layout.getViewById(R.id.unitSpinner).setId(R.id.unitSpinner + i);
+                layout.getViewById(R.id.unitSpinner2).setId(R.id.unitSpinner2 + i);
+                setsLayout.addView(layout);
+            }
+        }
+
+        LayoutInflater inflater = getLayoutInflater();
+        ConstraintLayout layout = (ConstraintLayout) inflater.inflate(R.layout.notes_form, root, false);
+        setsLayout.addView(layout);
+
+        Button addExerciseBtn = new Button(EntryForm.this);
+        addExerciseBtn.setText("ADD EXERCISE");
+        addExerciseBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                removeLayout();
+            }
+        });
+        setsLayout.addView(addExerciseBtn);
+
+        formLayout.addView(setsLayout);
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -182,13 +344,12 @@ public class EntryForm extends AppCompatActivity {
 
         Intent i = getIntent();
         Workout workout = new Workout();
+        currentWorkout = new EntryAdapter(workout, this);
 
-        replacePos = i.getIntExtra("editPos", -1);
-        currentWorkout = new EntryAdapter(workout, this, replacePos);
-
-        if(i.getParcelableArrayListExtra("editList") != null) {
+        if(i.getParcelableExtra("editList") != null) {
+            System.out.println("FJFIDJIJFISJ");
             workout = i.getParcelableExtra("editList");
-            currentWorkout = new EntryAdapter(workout, this, replacePos);
+            currentWorkout = new EntryAdapter(workout, this);
             i.removeExtra("editList");
             save();
         }
@@ -196,7 +357,7 @@ public class EntryForm extends AppCompatActivity {
 
         list.setAdapter(currentWorkout);
 
-        if(i.getParcelableExtra("entry") != null) {
+/*      if(i.getParcelableExtra("entry") != null) {
             Entry entry = (Entry) i.getParcelableExtra("entry");
             if(currentWorkout.replacePos != -1) {
                 currentWorkout.add(currentWorkout.replacePos, entry);
@@ -206,7 +367,7 @@ public class EntryForm extends AppCompatActivity {
             }
             currentWorkout.notifyDataSetChanged();
             save();
-        }
+        }*/
 
         Button subBtn = (Button) findViewById(R.id.button3);
 
@@ -224,7 +385,6 @@ public class EntryForm extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(EntryForm.this, WorkoutList.class);
-                currentWorkout.replacePos = -1;
                 save();
                 startActivity(intent);
             }
@@ -237,19 +397,8 @@ public class EntryForm extends AppCompatActivity {
 
     }
 
-    public void newEntry(View view) {
-
-    }
-
-    /*
-    @Override
-    public void onRestoreInstanceState(Bundle savedInstance){
-        onCreate(savedInstance);
-    }*/
-
     public void save() {
-        /*
-        try
+        /*        try
         {
             File file = new File(getFilesDir() + "/output.txt");
             if (!file.exists()) {
@@ -297,8 +446,8 @@ public class EntryForm extends AppCompatActivity {
         }
         Intent intent = new Intent(this, WorkoutList.class);
         TextView date = (TextView) findViewById(R.id.textView3);
-        currentWorkout.setDate(date.getText().toString());
-        //intent.putParcelableArrayListExtra("finalEntry", currentWorkout.getList());
+        currentWorkout.workout.date = date.getText().toString();
+        intent.putExtra("finalWorkout", (Parcelable) currentWorkout.workout);
         startActivity(intent);
     }
 
@@ -306,91 +455,161 @@ public class EntryForm extends AppCompatActivity {
         return currentWorkout.getCount() > 0;
     }
 
-    /*
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_entry_form);
+    public void setEditView(int position) {
+        LinearLayout root = (LinearLayout)findViewById(R.id.root);
+        formLayout = new LinearLayout(EntryForm.this);
+        formLayout.setOrientation(formLayout.VERTICAL);
+        ArrayList<String> spinnerArray = new ArrayList<String>();
+        spinnerArray.add("Custom");
 
-        Button btn = (Button) findViewById(R.id.button2);
+        Spinner spinner = new Spinner(EntryForm.this);
+        spinner.setPrompt("Choose an exercise...");
+        spinner.setId(R.id.spinner_type);
+        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(EntryForm.this, android.R.layout.simple_spinner_dropdown_item, spinnerArray);
+        spinner.setAdapter(spinnerArrayAdapter);
 
-        Intent i = getIntent();
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
-        if(i.getParcelableExtra("editEntry") != null) {
-            Entry entry = (Entry) i.getParcelableExtra("editEntry");
-            ((TextView) findViewById(R.id.editExercise)).setText(entry.exercise);
-            ((TextView) findViewById(R.id.editType)).setText(entry.type);
-            ((TextView) findViewById(R.id.editSets)).setText(entry.sets);
-            ((TextView) findViewById(R.id.editReps)).setText(entry.reps);
-            ((TextView) findViewById(R.id.editWeight)).setText(entry.weight);
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+
+                LayoutInflater inflater = getLayoutInflater();
+                ConstraintLayout layout = (ConstraintLayout) inflater.inflate(R.layout.exercise_custom, root, false);
+                formLayout.addView(layout);
+
+                EditText numSetsForm = (EditText) findViewById(R.id.numSetsForm);
+                EditText exerciseNameForm = (EditText) findViewById(R.id.exerciseNameForm);
+                exerciseNameForm.setText(currentWorkout.workout.get(position).exerciseName);
+
+                numSetsForm.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        if(!s.toString().equals("")) {
+                            if(Integer.parseInt(s.toString()) < 1) {
+                                numSetsForm.setText(1 + "");
+                            } else if(Integer.parseInt(s.toString()) > 10) {
+                                numSetsForm.setText(10 + "");
+                            }
+                            generateSetsView(Integer.parseInt(numSetsForm.getText().toString()));
+                        }
+                    }
+                });
+
+                Spinner spinnerTimeReps = (Spinner) findViewById(R.id.spinnerTimeReps);
+
+                spinnerTimeReps.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+                    @Override
+                    public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                        if(spinnerTimeReps.getSelectedItem().toString().equals("Reps")) {
+                            usesReps = true;
+                        } else {
+                            usesReps = false;
+                        }
+
+                        System.out.println("usesReps: " + usesReps);
+
+                        if(spinnerFirst) {
+                            spinnerFirst = false;
+                            return;
+                        }
+                        EditText numSetsForm = (EditText) findViewById(R.id.numSetsForm);
+
+                        if(!numSetsForm.getText().toString().equals("")) {
+                            generateSetsView(Integer.parseInt(numSetsForm.getText().toString()));
+                        }
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parentView) {
+                        // your code here
+                    }
+                });
+
+                if(currentWorkout.workout.get(position).usesReps) {
+                    spinnerTimeReps.setSelection(0);
+                } else {
+                    spinnerTimeReps.setSelection(1);
+                }
+
+                numSetsForm.setText(currentWorkout.workout.get(position).numSets + "");
+                generateSetsViewEdit(Integer.parseInt(numSetsForm.getText().toString()), position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                // your code here
+            }
+
+        });
+
+        root.removeView(addButton);
+        formLayout.addView(spinner);
+        root.addView(formLayout);
+    }
+
+    void generateSetsViewEdit(int numSets, int position) {
+        LinearLayout root = (LinearLayout)findViewById(R.id.root);
+        if(findViewById(R.id.setsLayout) != null) {
+            formLayout.removeView(findViewById(R.id.setsLayout));
+        }
+        LinearLayout setsLayout = new LinearLayout(EntryForm.this);
+        setsLayout.setOrientation(LinearLayout.VERTICAL);
+        setsLayout.setId(R.id.setsLayout);
+        for(int i = 0; i < numSets; i++) {
+            LayoutInflater inflater = getLayoutInflater();
+            inflater = getLayoutInflater();
+            if(currentWorkout.workout.get(position).usesReps) {
+                ConstraintLayout layout = (ConstraintLayout) inflater.inflate(R.layout.set_reps, root, false);
+                layout.getViewById(R.id.editRepsForm).setId(R.id.editRepsForm + i);
+                layout.getViewById(R.id.editWeightForm).setId(R.id.editWeightForm + i);
+                layout.getViewById(R.id.unitSpinner).setId(R.id.unitSpinner + i);
+
+                System.out.println(currentWorkout.workout.get(position).setReps.get(i).reps + "");
+                ((EditText) layout.getViewById(R.id.editRepsForm)).setText(currentWorkout.workout.get(position).setReps.get(i).reps + "");
+                ((EditText) layout.getViewById(R.id.editWeightForm)).setText(currentWorkout.workout.get(position).setReps.get(i).weight + "");
+                //layout.getViewById(R.id.unitSpinner).setId(R.id.unitSpinner + i);
+                setsLayout.addView(layout);
+            } else {
+                ConstraintLayout layout = (ConstraintLayout) inflater.inflate(R.layout.time_reps, root, false);
+                layout.getViewById(R.id.editRepsForm).setId(R.id.editRepsForm + i);
+                layout.getViewById(R.id.editWeightForm).setId(R.id.editWeightForm + i);
+                layout.getViewById(R.id.unitSpinner).setId(R.id.unitSpinner + i);
+                layout.getViewById(R.id.unitSpinner2).setId(R.id.unitSpinner2 + i);
+
+                ((EditText) layout.getViewById(R.id.editRepsForm)).setText(currentWorkout.workout.get(position).setTimes.get(i).time + "");
+                ((EditText) layout.getViewById(R.id.editWeightForm)).setText(currentWorkout.workout.get(position).setTimes.get(i).weight + "");
+                //layout.getViewById(R.id.unitSpinner).setId(R.id.unitSpinner + i);
+                setsLayout.addView(layout);
+            }
         }
 
-        btn.setOnClickListener(new View.OnClickListener() {
+        LayoutInflater inflater = getLayoutInflater();
+        ConstraintLayout layout = (ConstraintLayout) inflater.inflate(R.layout.notes_form, root, false);
+        ((EditText) layout.getViewById(R.id.notesForm)).setText(currentWorkout.workout.get(position).notes);
+
+        setsLayout.addView(layout);
+
+        Button addExerciseBtn = new Button(EntryForm.this);
+        addExerciseBtn.setText("ADD EXERCISE");
+        addExerciseBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!inputIsValid()) {
-                    Context context = getApplicationContext();
-                    CharSequence text = "Must enter information for all fields.";
-                    int duration = Toast.LENGTH_SHORT;
-
-                    Toast toast = Toast.makeText(context, text, duration);
-                    toast.show();
-                }
-                else {
-                    submit(v);
-                }
+                removeLayoutEdit(position);
             }
         });
+        setsLayout.addView(addExerciseBtn);
 
-        //back button
-
-        Button backBtn = (Button) findViewById(R.id.button5);
-
-        backBtn.setOnClickListener(new View.OnClickListener() {
-          @Override
-          public void onClick(View v) { submit(v); }
-        });
-
+        formLayout.addView(setsLayout);
     }
-
-    public void submit(View view) {
-
-        String editExercise = ((TextView) findViewById(R.id.editExercise)).getText().toString();
-        String editType = ((TextView) findViewById(R.id.editType)).getText().toString();
-        String editSets = ((TextView) findViewById(R.id.editSets)).getText().toString();
-        String editReps = ((TextView) findViewById(R.id.editReps)).getText().toString();
-        String editWeight = ((TextView) findViewById(R.id.editWeight)).getText().toString();
-
-        Entry entry = new Entry(editExercise, editType, editSets, editReps, editWeight);
-
-        Intent intent = new Intent(this, WorkoutList.class);
-        intent.putParcelableArrayListExtra("editList", getIntent().getParcelableArrayListExtra("editList"));
-        intent.putExtra("editPos", getIntent().getIntExtra("editPos", -1));
-        intent.putExtra("entry", (Parcelable) entry);
-        startActivity(intent);
-    }
-
-    public boolean inputIsValid() {
-        boolean isValid = true;
-
-        if(((TextView) findViewById(R.id.editExercise)).getText().toString().equals("")) {
-            isValid = false;
-        }
-        if(((TextView) findViewById(R.id.editType)).getText().toString().equals("")) {
-            isValid = false;
-        }
-        if(((TextView) findViewById(R.id.editSets)).getText().toString().equals("")) {
-            isValid = false;
-        }
-        if(((TextView) findViewById(R.id.editReps)).getText().toString().equals("")) {
-            isValid = false;
-        }
-        if(((TextView) findViewById(R.id.editWeight)).getText().toString().equals("")) {
-            isValid = false;
-        }
-
-        return isValid;
-    }
-
-*/
 }

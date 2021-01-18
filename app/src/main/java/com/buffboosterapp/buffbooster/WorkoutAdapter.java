@@ -69,7 +69,7 @@ public class WorkoutAdapter extends BaseAdapter implements ListAdapter {
     public void save() {
         try
         {
-            File file = new File(main.getFilesDir() + "/main.txt");
+            File file = new File(main.getFilesDir() + "workoutList.txt");
             if (!file.exists()) {
                 file.createNewFile();
             }
@@ -86,9 +86,9 @@ public class WorkoutAdapter extends BaseAdapter implements ListAdapter {
 
     public void edit(int position) {
         replacePos = position;
-        Intent intent = new Intent(main, WorkoutList.class);
+        Intent intent = new Intent(main, EntryForm.class);
         intent.putExtra("editList", (Parcelable) workouts.get(position));
-        //entry.remove(position);
+        //workouts.remove(position);
         save();
         main.startActivity(intent);
     }

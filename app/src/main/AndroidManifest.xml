@@ -21,6 +21,10 @@
         <activity android:name="com.buffboosterapp.buffbooster.About" />
         <activity android:name="com.buffboosterapp.buffbooster.WeightLog" />
         <activity android:name="com.buffboosterapp.buffbooster.ProgressPictures" />
+        <activity android:name="com.buffboosterapp.buffbooster.Goals" />
+        <activity android:name="com.buffboosterapp.buffbooster.ExerciseInfo" />
+        <activity android:name="com.buffboosterapp.buffbooster.RecRoutines" />
+        <activity android:name="com.buffboosterapp.buffbooster.Community" />
     </application>
 
     <uses-permission android:name="android.permission.CAMERA" />

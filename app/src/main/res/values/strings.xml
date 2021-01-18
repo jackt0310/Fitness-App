@@ -9,4 +9,15 @@
     <string-array name="spinnerWeightUnits">
         <item>lb</item>
     </string-array>
+
+    <string-array name="spinnerTimeUnits">
+        <item>minutes</item>
+        <item>seconds</item>
+    </string-array>
+
+    <string-array name="spinnerGoalType">
+        <item>Gain Weight</item>
+        <item>Lose Weight</item>
+        <item>Maintain Weight</item>
+    </string-array>
 </resources>

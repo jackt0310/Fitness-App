@@ -41,6 +41,7 @@ import java.util.ArrayList;
 public class WeightLog extends AppCompatActivity {
     private WeightAdapter entryList;
     LineChart mChart;
+    double goalWeight = -1;
 
     private static final String FILE_NAME = "weightLog.txt";
 
@@ -72,18 +73,23 @@ public class WeightLog extends AppCompatActivity {
     }
 
     private void setData() {
+        loadGoal();
 
         mChart = findViewById(R.id.lineChart);
+        YAxis leftAxis = mChart.getAxisLeft();
 
-        float goalWeight = 175f;
-        LimitLine ll2 = new LimitLine(goalWeight, "Goal");
-        ll2.setTextSize(15f);
-        ll2.setLineWidth(4f);
-        ll2.enableDashedLine(10f, 10f, 0f);
-        ll2.setLineColor(Color.GREEN);
+        if(goalWeight >= 0) {
+            LimitLine ll2 = new LimitLine((float) goalWeight, "Goal");
+            ll2.setTextSize(15f);
+            ll2.setLineWidth(4f);
+            ll2.enableDashedLine(10f, 10f, 0f);
+            ll2.setLineColor(Color.GREEN);
+            leftAxis.addLimitLine(ll2);
+        }
+
 
         XAxis xAxis = mChart.getXAxis();
-        YAxis leftAxis = mChart.getAxisLeft();
+
         YAxis rightAxis = mChart.getAxisRight();
         rightAxis.setEnabled(false);
 
@@ -98,7 +104,6 @@ public class WeightLog extends AppCompatActivity {
 
         mChart.setDescription(description);
 
-        leftAxis.addLimitLine(ll2);
 
         leftAxis.setTextSize(15f);
         xAxis.setTextSize(15f);
@@ -125,10 +130,11 @@ public class WeightLog extends AppCompatActivity {
             }
         }
 
-        goalWeight = 175f;
+        System.out.println(goalWeight);
         if(max < goalWeight) {
-            max = goalWeight;
+            max = (float) goalWeight;
         }
+
 
         leftAxis = mChart.getAxisLeft();
         leftAxis.setAxisMinimum(min - 15);
@@ -230,5 +236,18 @@ public class WeightLog extends AppCompatActivity {
             ex.printStackTrace();
         }
         return loadList;
+    }
+
+
+    public void loadGoal() {
+        try {
+            FileInputStream fos = new FileInputStream(getFilesDir() + "goals.txt");
+            ObjectInputStream oos = new ObjectInputStream(fos);
+            goalWeight = oos.readDouble();
+            oos.close();
+            fos.close();
+        } catch(Exception ex) {
+            ex.printStackTrace();
+        }
     }
 }

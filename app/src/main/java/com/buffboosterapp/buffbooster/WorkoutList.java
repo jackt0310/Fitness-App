@@ -53,8 +53,8 @@ public class WorkoutList extends AppCompatActivity {
         Intent i = getIntent();
 
         // Takes information from last page (if applicable)
-        if(i.getParcelableExtra("finalEntry") != null) {
-            Workout entry = i.getParcelableExtra("finalEntry");
+        if(i.getParcelableExtra("finalWorkout") != null) {
+            Workout entry = i.getParcelableExtra("finalWorkout");
             if(entryList.replacePos != -1) {
                 entryList.replace(entryList.replacePos, entry);
                 entryList.replacePos = -1;
